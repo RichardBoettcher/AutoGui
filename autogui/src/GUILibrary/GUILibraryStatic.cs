@@ -369,7 +369,7 @@ namespace GUILibrary
             //in case we couldnt successfully get a value we exit the program.
             if (searchElement == null)
             {
-                throw new ElementNotAvailableException("Cound not find element: " + selector + " in window " + activeWindow.GetCurrentPropertyValue(NameProperty) + " in " + timeout + " seconds");
+                throw new ElementNotAvailableException("Could not find element: " + selector + " in window " + activeWindow.GetCurrentPropertyValue(NameProperty) + " in " + timeout + " seconds");
             }
             else
             {
