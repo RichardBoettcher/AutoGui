@@ -443,6 +443,9 @@ namespace GUILibrary
             var hasText = (bool)element.GetCurrentPropertyValue(IsTextPatternAvailableProperty);
 
             //elements usually only have either a text pattern or a value pattern so we check for both
+            //
+            //THIS IS AN UNTRUE STATEMENT SOME ELEMENTS HAVE BOTH A VALUEPATTERN AND A TEXTPATTERN
+            //TODO: FIGURE OUT HOW TO GET BOTH VALUES IF DESIRED or have a flag to discriminate between the two
             if (hasValue)
             {
                 ValuePattern valuePattern = (ValuePattern)element.GetCurrentPattern(ValuePattern.Pattern);
@@ -451,7 +454,7 @@ namespace GUILibrary
             }
             else if (hasText)
             {
-                TextPattern textPattern = (TextPattern)element.GetCurrentPattern(ValuePattern.Pattern);
+                TextPattern textPattern = (TextPattern)element.GetCurrentPattern(TextPattern.Pattern);
                 Debug.WriteLine("element is a text pattern element");
                 return textPattern.DocumentRange.GetText(-1).TrimEnd('\r'); // often there is an extra '\r' hanging off the end.
             }
@@ -532,7 +535,41 @@ namespace GUILibrary
                 Mouse.Click(MouseButton.Left);
             }
         }
+        ///--------------------------------------------------------------------
+        /// <summary>
+        /// Asserts an element is visible.
+        /// </summary>
+        /// <param name="selector">user input selector string to parse in format property1:value1,property2:value2..</param>
+        /// <param name="child">Allows the user to select which control to use if there are several matching input conditions</param>
+        /// <param name="timeout">time to search before timing out</param>
+        ///--------------------------------------------------
+        public static void Assertvisible(string selector, int child = 0, double timeout = timeout)
+        {
+            ValidateInput(selector, " ", child, timeout);
 
+            AutomationElement control = Search(selector, child, timeout); //get the control of interest
+
+            //we check if object is invokable since this is a faster way to click than moving our mouse to the control
+            var isInvokable = (bool)control.GetCurrentPropertyValue(IsInvokePatternAvailableProperty);
+            if (isInvokable)
+            {
+                Debug.WriteLine("the automation element was invokable. Now Clicking element");
+                var invokePattern = control.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+                invokePattern.Invoke();
+            }
+            else
+            {
+                //click manually by moving mouse and clicking left mouse button
+                Debug.WriteLine("the automation element was NOT invokable. Manually moving mouse over and clicking");
+                //Point p = control.GetClickablePoint();
+                //Mouse.MoveTo(p);
+                //Mouse.Click(MouseButton.Left);
+                System.Windows.Point clickablePoint = control.GetClickablePoint();
+                System.Windows.Forms.Cursor.Position =
+                    new System.Drawing.Point((int)clickablePoint.X, (int)clickablePoint.Y);
+                Mouse.Click(MouseButton.Left);
+            }
+        }
         ///--------------------------------------------------------------------
         /// <summary>
         /// Sends the keyboard keys
