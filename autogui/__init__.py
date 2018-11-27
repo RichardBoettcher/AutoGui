@@ -6,9 +6,14 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 clr.AddReference(dir_path + r'\src\GUILibrary\bin\Release\GUILibrary.dll')
 from GUILibrary import GUILibraryClass as gl
 
-timeout = 3
+timeout = 3 #default timeout
+
 #these are a complete copy-paste of the method definitions in the dll.
 #With IronPthon the dll methods can be used directly: from GUILibrary.GUILibraryClass import *
+def getProperty(id,prop,child=0,timeout=timeout):
+    return gl.GetProperty(id,prop,child,timeout)
+def exists(id,child=0,timeout=timeout):
+    return gl.Exists(id,child,timeout)
 def click(id,child=0,timeout=timeout):
     gl.Click(id,child,timeout)
 def write(value,id,child=0,timeout=timeout):
